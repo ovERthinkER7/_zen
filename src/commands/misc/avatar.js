@@ -54,11 +54,12 @@ module.exports = {
                 interaction.deleteReply();
             }
         } catch (err) {
+            embed.setColor("Red");
             await interaction.editReply({
-                content: `Error running this command`,
-                ephemeral: true,
+                embeds: [embed],
+                components: [],
             });
-            console.log(err);
+            // console.log(err);
         }
     },
 };
