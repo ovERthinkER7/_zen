@@ -1,5 +1,20 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { ButtonKit } = require("commandkit");
+const {
+    SlashCommandBuilder,
+    EmbedBuilder,
+    ButtonStyle,
+    ActionRowBuilder,
+} = require("discord.js");
+function getButtons() {
+    const del = new ButtonKit()
+        .setEmoji("🗑️")
+        .setStyle(ButtonStyle.Danger)
+        .setCustomId("delete");
 
+    const row = new ActionRowBuilder().addComponents(del);
+
+    return { del, row };
+}
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("avatar")
@@ -11,6 +26,7 @@ module.exports = {
                 .setRequired(false)
         ),
     run: async ({ interaction, client, handler }) => {
+        const { del, row } = getButtons();
         const user = interaction.options.getUser("user") || interaction.user;
         const avatarurl = user.displayAvatarURL({
             dynamic: true,
@@ -24,9 +40,21 @@ module.exports = {
             .setImage(avatarurl)
             .setColor("Random");
         try {
-            await interaction.reply({ embeds: [embed] });
+            const message = await interaction.reply({
+                embeds: [embed],
+                components: [row],
+            });
+            const collectorFilter = (i) => i.user.id === interaction.user.id;
+
+            const confirmation = await message.awaitMessageComponent({
+                filter: collectorFilter,
+                time: 60_000,
+            });
+            if (confirmation.customId === "delete") {
+                interaction.deleteReply();
+            }
         } catch (err) {
-            await interaction.reply({
+            await interaction.editReply({
                 content: `Error running this command`,
                 ephemeral: true,
             });
