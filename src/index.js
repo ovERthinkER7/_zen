@@ -2,6 +2,7 @@ require("dotenv").config();
 const { Client, IntentsBitField, ActivityType } = require("discord.js");
 const mongoose = require("mongoose");
 const { CommandKit } = require("commandkit");
+const remindschema = require("./models//reminder");
 
 const client = new Client({
     intents: [
@@ -40,3 +41,26 @@ new CommandKit({
         console.log(`Error: ${error}`);
     }
 })();
+
+setInterval(async () => {
+    const reminders = await remindschema.find();
+    if (!reminders) return;
+    else {
+        reminders.forEach(async (reminder) => {
+            if (reminder.Time > Date.now()) return;
+
+            const user = await client.users.fetch(reminder.User);
+            user?.send({
+                content: `${user}, you asked me to remind you about: \`${reminder.Remind}\``,
+            }).catch((err) => {
+                return;
+            });
+
+            await remindschema.deleteMany({
+                Time: reminder.Time,
+                User: user.id,
+                Remind: reminder.Remind,
+            });
+        });
+    }
+}, 1000 * 5);
