@@ -9,6 +9,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("presence-logger")
         .setDescription("Log the presence of user in the server")
+        .setDMPermission(false)
         .addSubcommand((cmd) =>
             cmd
                 .setName("add")
