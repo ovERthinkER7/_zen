@@ -3,6 +3,7 @@ const { Client, IntentsBitField, ActivityType } = require("discord.js");
 const mongoose = require("mongoose");
 const { CommandKit } = require("commandkit");
 const remindschema = require("./models//reminder");
+const keep_alive = require("./keep_alive");
 
 const client = new Client({
     intents: [
