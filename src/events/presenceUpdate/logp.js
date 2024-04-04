@@ -6,6 +6,7 @@ module.exports = async (oldp, newp, client, handler) => {
     // console.log(data + "fjdlk");
     if (!data) return;
     if (oldp.user.bot) return;
+    if (oldp.status == newp.status) return;
     // console.log(oldp.user.displayAvatarURL({ dynamic: true }));
     var sendchannel = await oldp.guild.channels.fetch(data.Logchannel);
     var embed;
