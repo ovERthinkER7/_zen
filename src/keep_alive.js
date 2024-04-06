@@ -7,7 +7,7 @@ server.all(`/`, (req, res) => {
 
 function keepAlive() {
     server.listen(3000, () => {
-        console.log(`Creator: ItzNexus`);
+        console.log(`on`);
     });
 }
 

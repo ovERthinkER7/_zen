@@ -17,7 +17,7 @@ module.exports = async (oldp, newp, client, handler) => {
         embed = new EmbedBuilder()
             .setColor("Aqua")
             .setDescription(
-                `${newp.user} presence's changes from **${old}** to **${newp.status}**`
+                `**Member Status Change** \n\n**Member:** ${newp.user}\n**Previous Status:** \`${old}\` ➡️ **New Status:** \`${newp.status}\``
             )
             .setTimestamp()
             .setAuthor({
