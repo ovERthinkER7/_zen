@@ -3,7 +3,7 @@ const { Client, IntentsBitField, ActivityType } = require("discord.js");
 const mongoose = require("mongoose");
 const { CommandKit } = require("commandkit");
 const remindschema = require("./models//reminder");
-
+const keep_alive = require("./keep_alive");
 const client = new Client({
     intents: [
         IntentsBitField.Flags.Guilds,
@@ -20,7 +20,7 @@ new CommandKit({
     devUserIds: ["586580387405496340"],
     eventsPath: `${__dirname}/events`,
     commandsPath: `${__dirname}/commands`,
-    validationsPath: `${__dirname}/validations`,
+    // validationsPath: `${__dirname}/validations`,
     // bulkRegister: true,
 });
 (async () => {
