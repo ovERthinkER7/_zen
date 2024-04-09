@@ -18,7 +18,7 @@ module.exports = async (message, client, handler) => {
     if (message.author.bot || !message.inGuild()) return;
     var cal = message.content;
     const result = evaluateExpression(cal);
-    if (!evaluateExpression(cal)) {
+    if (result === null) {
         return;
     } else {
         const channel = message.channel;
