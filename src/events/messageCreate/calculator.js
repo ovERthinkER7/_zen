@@ -5,6 +5,9 @@ function evaluateExpression(expression) {
     if (/^\d+$/.test(expression)) {
         return null;
     }
+    if (expression.length == 1) {
+        return null;
+    }
     try {
         const parser = math.parser();
         const result = parser.evaluate(expression);
