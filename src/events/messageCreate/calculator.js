@@ -1,5 +1,17 @@
 const { EmbedBuilder } = require("discord.js");
 const math = require("mathjs");
+function expandShortForms(expression) {
+    const shortForms = {
+        k: 1000,
+        m: 1000000,
+        b: 1000000000,
+    };
+    return expression.replace(
+        /([0-9.]+)([kKmMbB])(?=\b|[+*/-])/g,
+        (match, number, shortForm) =>
+            parseFloat(number) * shortForms[shortForm.toLowerCase()]
+    );
+}
 function evaluateExpression(expression) {
     // Check if the string only contains digits
     if (/^\d+$/.test(expression)) {
@@ -8,6 +20,7 @@ function evaluateExpression(expression) {
     if (expression.length == 1) {
         return null;
     }
+    expression = expandShortForms(expression);
     try {
         const parser = math.parser();
         const result = parser.evaluate(expression);
