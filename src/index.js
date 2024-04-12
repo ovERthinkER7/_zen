@@ -20,6 +20,12 @@ new CommandKit({
     devUserIds: ["586580387405496340"],
     eventsPath: `${__dirname}/events`,
     commandsPath: `${__dirname}/commands`,
+    devUserIds: ["586580387405496340"],
+    devGuildIds: [
+        "828955405676969984",
+        "1030924407817916526",
+        "1194574229937602574",
+    ],
     // validationsPath: `${__dirname}/validations`,
     // bulkRegister: true,
 });
