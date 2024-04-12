@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "canvacord": "^5.4.8",
+    "canvas": "^2.11.2",
     "commandkit": "^0.1.10",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
