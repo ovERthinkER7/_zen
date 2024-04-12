@@ -6,7 +6,7 @@ module.exports = {
         .addAttachmentOption((opt) =>
             opt
                 .setName("avatar")
-                .setDescription("The avatar to")
+                .setDescription("The avatar to set")
                 .setRequired(true)
         ),
     run: async ({ client, interaction }) => {
@@ -22,7 +22,7 @@ module.exports = {
         }
         if (avatar.contentType !== "image/gif")
             return await sendMessage(
-                `⚠️ Please use gif format for animated emoji`
+                `⚠️ Please use gif format for animated avatar`
             );
         var error;
         await client.user.setAvatar(avatar.url).catch(async (err) => {
