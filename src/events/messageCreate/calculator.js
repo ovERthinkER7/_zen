@@ -17,7 +17,7 @@ function evaluateExpression(expression) {
     if (/^\d+$/.test(expression)) {
         return null;
     }
-    if (expression.length == 1) {
+    if (expression.length <= 1) {
         return null;
     }
     expression = expandShortForms(expression);
