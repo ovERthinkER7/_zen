@@ -1,5 +1,10 @@
 require("dotenv").config();
-const { Client, IntentsBitField, ActivityType } = require("discord.js");
+const {
+    Client,
+    IntentsBitField,
+    ActivityType,
+    EmbedBuilder,
+} = require("discord.js");
 const mongoose = require("mongoose");
 const { CommandKit } = require("commandkit");
 const remindschema = require("./models//reminder");
@@ -56,8 +61,14 @@ setInterval(async () => {
             if (reminder.Time > Date.now()) return;
 
             const user = await client.users.fetch(reminder.User);
+            const embed = new EmbedBuilder()
+                .setColor("Aqua")
+                .setTitle(":bell: **Reminder**")
+                .setDescription(
+                    `${user}, you asked to be reminded of **${reminder.Remind}.**`
+                );
             user?.send({
-                content: `${user}, you asked me to remind you about: \`${reminder.Remind}\``,
+                embeds: [embed],
             }).catch((err) => {
                 return;
             });
