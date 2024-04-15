@@ -22,32 +22,152 @@ module.exports = {
                         .setDescription("Reminder duration(1h,30m,1 day)")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand((cmd) =>
+            cmd
+                .setName("list")
+                .setDescription("See all yours current reminders")
+        )
+        .addSubcommand((cmd) =>
+            cmd
+                .setName("remove")
+                .setDescription("Removes one of yours reminder")
+                .addStringOption((opt) =>
+                    opt
+                        .setName("id")
+                        .setDescription("Enter ID to remove")
+                        .setRequired(true)
+                )
         ),
     run: async ({ interaction, client, handler }) => {
-        const reminder = interaction.options.getString("reminder");
-        const duration = interaction.options.getString("duration");
-        const msDuration = ms(duration);
-        if (isNaN(msDuration)) {
-            await interaction.editReply({
-                content: "Please provide a valid timeout duration.",
-                ephemeral: true,
-            });
-            return;
-        }
-        const time = Date.now() + msDuration;
-        await remindschema.create({
-            User: interaction.user.id,
-            Time: time,
-            Remind: reminder,
-        });
+        const subcommand = interaction.options.getSubcommand();
+        switch (subcommand) {
+            case "set":
+                const reminder = interaction.options.getString("reminder");
+                const duration = interaction.options.getString("duration");
 
-        const embed = new EmbedBuilder()
-            .setColor("Aqua")
-            .setDescription(
-                `📩 Your reminder has been set for <t:${Math.floor(
-                    time / 1000
-                )}:R>! I will remind you ${reminder}`
-            );
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+                const msDuration = ms(duration);
+                if (isNaN(msDuration)) {
+                    await interaction.editReply({
+                        content: "Please provide a valid timeout duration.",
+                        ephemeral: true,
+                    });
+                    return;
+                }
+                const time = Date.now() + msDuration;
+                var guild;
+                if (interaction.inGuild()) guild = interaction.guild.id;
+                else guild = "DM";
+                const setreminder = await remindschema.create({
+                    Guild: guild,
+                    User: interaction.user.id,
+                    Time: time,
+                    Remind: reminder,
+                });
+                const embed = new EmbedBuilder()
+                    .setColor("Aqua")
+                    .setDescription(
+                        `📩 | ${
+                            interaction.user
+                        } your reminder has been set! I'll will remind about **${reminder}** <t:${Math.floor(
+                            time / 1000
+                        )}:R>! **ID** : \`${setreminder.uniqueId}\``
+                    );
+                await interaction.reply({ embeds: [embed], ephemeral: true });
+                break;
+            case "list":
+                const embedlist = new EmbedBuilder()
+                    .setColor("Aqua")
+                    .setTitle(":bell: **Reminders**");
+                if (!interaction.inGuild()) {
+                    var data = await remindschema.find({
+                        User: interaction.user.id,
+                    });
+                    if (data <= 0) {
+                        embedlist.setDescription("You have no reminders set!");
+                        await interaction.reply({
+                            embeds: [embedlist],
+                        });
+                        return;
+                    }
+                    let list = "";
+                    data.forEach((ele) => {
+                        list += `**ID** : \`${
+                            ele.uniqueId
+                        }\` **Time** : <t:${Math.floor(
+                            ele.Time / 1000
+                        )}:R> **Message** : \`${ele.Remind}\`\n\n`;
+                    });
+                    embedlist.setDescription(list);
+                    await interaction
+                        .reply({
+                            embeds: [embedlist],
+                            ephemeral: true,
+                        })
+                        .catch((err) => console.log(err));
+                    return;
+                } else {
+                    var data = await remindschema.find({
+                        Guild: interaction.guild.id,
+                        User: interaction.user.id,
+                    });
+                    if (data.length <= 0) {
+                        embedlist.setDescription("You have no reminders set!");
+                        await interaction.reply({
+                            embeds: [embedlist],
+                            ephemeral: true,
+                        });
+                        return;
+                    }
+                    let list = "";
+                    data.forEach((ele) => {
+                        list += `**ID** : \`${
+                            ele.uniqueId
+                        }\` **Time** : <t:${Math.floor(
+                            ele.Time / 1000
+                        )}:R> **Message** : \`${ele.Remind}\`\n\n`;
+                    });
+                    embedlist.setDescription(list);
+                    await interaction
+                        .reply({
+                            embeds: [embedlist],
+                            ephemeral: true,
+                        })
+                        .catch((err) => console.log(err));
+                    return;
+                }
+            case "remove":
+                const id = interaction.options.getString("id");
+                const deleteembed = new EmbedBuilder().setColor("Aqua");
+                try {
+                    const deleted = await remindschema.deleteOne({
+                        uniqueId: id,
+                    });
+                    if (deleted.deletedCount >= 1) {
+                        deleteembed.setDescription(
+                            "✅ | Successfully removed reminder!"
+                        );
+                        await interaction
+                            .reply({
+                                embeds: [deleteembed],
+                                ephemeral: true,
+                            })
+                            .catch((err) => console.log(err));
+                    } else {
+                        deleteembed.setDescription(
+                            "⚠️ | Could not find a reminder with that id from you.To get a list of your reminders, use the </remind list:1225466582910767174> command."
+                        );
+                        await interaction
+                            .reply({
+                                embeds: [deleteembed],
+                                ephemeral: true,
+                            })
+                            .catch((err) => console.log(err));
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+                break;
+        }
     },
 };
