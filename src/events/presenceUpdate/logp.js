@@ -13,6 +13,7 @@ module.exports = async (oldp, newp, client, handler) => {
     if (!oldp) old = "offline";
     else old = oldp.status;
     if (old == newp.status) return;
+    if (old !== "offline" && newp.status !== "offline") return;
     try {
         embed = new EmbedBuilder()
             .setColor("Aqua")
