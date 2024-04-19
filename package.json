@@ -15,6 +15,7 @@
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "fs": "^0.0.1-security",
     "mathjs": "^12.4.1",
     "mongoose": "^8.2.4",
     "ms": "^2.1.3",
