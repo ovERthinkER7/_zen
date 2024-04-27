@@ -17,8 +17,10 @@ const client = new Client({
         IntentsBitField.Flags.GuildPresences,
         IntentsBitField.Flags.MessageContent,
         IntentsBitField.Flags.DirectMessages,
+        IntentsBitField.Flags.GuildVoiceStates,
     ],
 });
+module.exports = client;
 
 new CommandKit({
     client,
@@ -81,4 +83,5 @@ setInterval(async () => {
         });
     }
 }, 1000 * 5);
+require("./utils/distube.js");
 keepAlive();
