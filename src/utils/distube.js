@@ -9,13 +9,27 @@ let spotifyOptions = {
     parallel: true,
     emitEventsAfterFetching: true,
 };
+let youtubeCookie;
+if (process.env.YOUTUBE_COOKIE) {
+    youtubeCookie = process.env.YOUTUBE_COOKIE;
+} else {
+    youtubeCookie = "none";
+}
 client.distube = new DisTube(client, {
-    leaveOnFinish: true,
+    leaveOnFinish: false,
     searchCooldown: 10,
     leaveOnEmpty: true,
     emptyCooldown: 180,
     leaveOnStop: false,
     nsfw: true,
+    youtubeCookie: youtubeCookie,
+    ytdlOptions: {
+        highWaterMark: 1024 * 1024 * 64,
+        quality: "highestaudio",
+        format: "audioonly",
+        liveBuffer: 60000,
+        dlChunkSize: 1024 * 1024 * 4,
+    },
     emitNewSongOnly: true,
     emitAddSongWhenCreatingQueue: true,
     emitAddListWhenCreatingQueue: true,
