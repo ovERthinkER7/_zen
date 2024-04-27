@@ -50,7 +50,7 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setColor("Aqua")
-                .setDescription(":Stop: | **Stopped the music**!");
+                .setDescription("⏹️ | **Stopped the music**!");
 
             return await interaction.reply({ embeds: [embed] });
         } catch (err) {
