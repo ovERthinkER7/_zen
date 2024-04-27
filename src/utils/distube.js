@@ -4,6 +4,7 @@ const { DisTube } = require("distube");
 const { SpotifyPlugin } = require("@distube/spotify");
 const { SoundCloudPlugin } = require("@distube/soundcloud");
 const { YtDlpPlugin } = require("@distube/yt-dlp");
+const fs = require("fs");
 
 let spotifyOptions = {
     parallel: true,
@@ -11,7 +12,7 @@ let spotifyOptions = {
 };
 let youtubeCookie;
 if (process.env.YOUTUBE_COOKIE) {
-    youtubeCookie = process.env.YOUTUBE_COOKIE;
+    youtubeCookie = JSON.parse(fs.readFileSync("src/utils/cookie.json"));
 } else {
     youtubeCookie = "none";
 }
