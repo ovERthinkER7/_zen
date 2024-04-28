@@ -3,7 +3,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("autoplay")
-        .setDescription("Enable or disable autoplay"),
+        .setDescription("Enable or disable autoplay")
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const voiceChannel = interaction.member.voice.channel;
         const queue = await client.distube.getQueue(interaction);

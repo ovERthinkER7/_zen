@@ -11,7 +11,8 @@ module.exports = {
                     "The song you want to play | supported url: yt,soundcloud,spotify"
                 )
                 .setRequired(true)
-        ),
+        )
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         await interaction.deferReply();
         const voiceChannel = interaction.member.voice.channel;

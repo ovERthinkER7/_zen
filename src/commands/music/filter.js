@@ -10,7 +10,8 @@ module.exports = {
                 .setDescription("Filter the queue")
                 .setRequired(true)
                 .setAutocomplete(true)
-        ),
+        )
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const filter = interaction.options.getString("filter");
         const voiceChannel = interaction.member.voice.channel;

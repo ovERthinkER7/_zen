@@ -3,7 +3,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("back")
-        .setDescription("Play previous song"),
+        .setDescription("Play previous song")
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const voiceChannel = interaction.member.voice.channel;
         const queue = await client.distube.getQueue(interaction);

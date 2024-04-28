@@ -3,7 +3,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("resume")
-        .setDescription("Resume the paused song!"),
+        .setDescription("Resume the paused song!")
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const voiceChannel = interaction.member.voice.channel;
         const queue = await client.distube.getQueue(interaction);

@@ -11,7 +11,8 @@ module.exports = {
                 .setRequired(true)
                 .setMaxValue(200)
                 .setMinValue(0)
-        ),
+        )
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const vol = interaction.options.get("volume").value;
         const voiceChannel = interaction.member.voice.channel;

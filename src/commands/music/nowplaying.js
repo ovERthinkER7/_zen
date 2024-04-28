@@ -14,7 +14,8 @@ const status = (queue) =>
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("nowplaying")
-        .setDescription("Show the currently playing now!"),
+        .setDescription("Show the currently playing now!")
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const voiceChannel = interaction.member.voice.channel;
         const queue = await client.distube.getQueue(interaction);

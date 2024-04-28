@@ -10,7 +10,8 @@ module.exports = {
                 .setDescription("ID")
                 .setRequired(true)
                 .setAutocomplete(true)
-        ),
+        )
+        .setDMPermission(false),
 
     run: async ({ interaction, client }) => {
         const voiceChannel = interaction.member.voice.channel;

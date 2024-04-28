@@ -70,7 +70,18 @@ module.exports = {
                 }
                 timeinsec = timeinsec + ms(e) / 1000;
             });
-
+            if (timeinsec >= queue.songs[0].duration) {
+                return await interaction.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setColor("Red")
+                            .setDescription(
+                                `🚫 | Please provide time less than song duration \`${queue.songs[0].formattedDuration}\`!`
+                            ),
+                    ],
+                    ephemeral: true,
+                });
+            }
             await queue.seek(timeinsec);
             await interaction.reply({
                 embeds: [

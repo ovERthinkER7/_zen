@@ -10,7 +10,8 @@ module.exports = {
                 .setDescription("Choose the type of loop!")
                 .setRequired(true)
                 .setAutocomplete(true)
-        ),
+        )
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const loop = interaction.options.getString("type");
         const voiceChannel = interaction.member.voice.channel;

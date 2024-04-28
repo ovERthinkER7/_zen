@@ -3,7 +3,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("skip")
-        .setDescription("Skip the current song in the queue"),
+        .setDescription("Skip the current song in the queue")
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const voiceChannel = interaction.member.voice.channel;
         const queue = await client.distube.getQueue(interaction);
@@ -57,7 +58,7 @@ module.exports = {
 
                 const embed = new EmbedBuilder()
                     .setColor("Aqua")
-                    .setDescription("⏭ | **Song has been Skipped**");
+                    .setDescription(":track_next: | **Song has been Skipped**");
 
                 return await interaction.reply({ embeds: [embed] });
             } catch (err) {

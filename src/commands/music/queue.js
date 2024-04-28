@@ -8,7 +8,8 @@ const { paginationEmbed } = require("../../utils/pagination.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("queue")
-        .setDescription("See the list of songs in the queue!"),
+        .setDescription("See the list of songs in the queue!")
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const voiceChannel = interaction.member.voice.channel;
         const queue = await client.distube.getQueue(interaction);
