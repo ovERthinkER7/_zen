@@ -9,7 +9,8 @@ module.exports = {
                 .setName("time")
                 .setDescription("Enter in time(1m,30s)")
                 .setRequired(true)
-        ),
+        )
+        .setDMPermission(false),
     run: async ({ interaction, client }) => {
         const voiceChannel = interaction.member.voice.channel;
         const queue = await client.distube.getQueue(interaction);
