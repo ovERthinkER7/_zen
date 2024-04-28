@@ -26,6 +26,7 @@
     "ffmpeg-static": "^5.2.0",
     "formidable": "^3.5.1",
     "fs": "^0.0.1-security",
+    "genius-lyrics": "^4.4.7",
     "libsodium-wrappers": "^0.7.13",
     "mathjs": "^12.4.1",
     "mongoose": "^8.2.4",
