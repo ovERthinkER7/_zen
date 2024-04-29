@@ -70,7 +70,7 @@ client.distube
             .addFields(
                 {
                     name: `**Views:**`,
-                    value: song.views.toString(),
+                    value: song.views.toString().toLocaleString(),
                     inline: true,
                 },
                 {
