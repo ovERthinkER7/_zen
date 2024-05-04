@@ -161,6 +161,14 @@ client.distube
             .setColor("Aqua");
         queue.textChannel.send({ embeds: [embed] });
     })
+    .on("noRelated", (queue) => {
+        const embed = new EmbedBuilder()
+            .setTitle("Oh no!")
+            .setDescription("❌ I can't find any related song to play")
+            .setColor("Red");
+
+        queue.textChannel.send({ embeds: [embed] });
+    })
     .on("initQueue", (queue) => {
         queue.autoplay = false;
         queue.volume = 100;
