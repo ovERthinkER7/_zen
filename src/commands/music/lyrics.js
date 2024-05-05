@@ -1,4 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const {
+    SlashCommandBuilder,
+    EmbedBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+} = require("discord.js");
+const { paginationEmbed } = require("../../utils/pagination.js");
 const Genius = require("genius-lyrics");
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,6 +18,18 @@ module.exports = {
         )
         .setDMPermission(false),
     run: async ({ interaction, client }) => {
+        function chunkSubstr(str, size) {
+            if (str.length <= size) return str;
+
+            const numChunks = Math.ceil(str.length / size);
+            const chunks = new Array(numChunks);
+
+            for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
+                chunks[i] = str.substr(o, size);
+            }
+
+            return chunks;
+        }
         const voiceChannel = interaction.member.voice.channel;
         const queue = await client.distube.getQueue(interaction);
         const songName = interaction.options.getString("song");
@@ -124,52 +142,44 @@ module.exports = {
             }
             const song = search[0];
             const lyrics = await song.lyrics();
-            //     try {
-            //         lyrics = await lyricsfinder(song, "");
-            //         console.log(lyrics);
-            //         if (!lyrics) {
-            //             return await interaction.editReply({
-            //                 embeds: [
-            //                     new EmbedBuilder()
-            //                         .setColor("Red")
-            //                         .setDescription(
-            //                             `🚫 | I couldn't find any lyrics for currently playing song!`
-            //                         ),
-            //                 ],
-            //                 ephemeral: true,
-            //             });
-            //         }
-            //     } catch (err) {
-            //         console.log(err);
-            //     }
             if (lyrics.length > 4000) {
-                const channel = interaction.guild.channels.cache.get(
-                    interaction.channelId
+                let btn1 = new ButtonBuilder()
+                    .setCustomId("previousbtn")
+                    .setLabel("Previous")
+                    .setStyle(ButtonStyle.Secondary);
+
+                const btn2 = new ButtonBuilder()
+                    .setCustomId("nextbtn")
+                    .setLabel("Next")
+                    .setStyle(ButtonStyle.Primary);
+                let buttonList = [btn1, btn2];
+                const footer = {
+                    text: `Requested by ${interaction.user.tag}`,
+                    iconURL: interaction.user.displayAvatarURL({
+                        dynamic: true,
+                    }),
+                };
+
+                const embeds = chunkSubstr(lyrics, 4000).map((l, i) =>
+                    new EmbedBuilder()
+                        .setColor("Aqua")
+                        .setTitle(`🎶 Lyrics`)
+                        .setDescription(
+                            `## [${song.title}](${song.url})\n\n>>> ${l}`
+                        )
+                        .setFooter({
+                            text: footer.text,
+                            iconURL: footer.iconURL,
+                        })
+                        .setTimestamp()
                 );
-                const lyrics1 = lyrics.slice(0, 4000);
-                const lyricsrest = lyrics.slice(4000);
-                let lyricsEmbed = new EmbedBuilder()
-                    .setColor("Aqua")
-                    .setTitle(`🎶 Lyrics`)
-                    .setDescription(
-                        `## [${song.title}](${song.url})\n\n>>> ${lyrics1}`
-                    );
-                let lyricsEmbedrest = new EmbedBuilder()
-                    .setColor("Aqua")
-                    .setDescription(`>>> ${lyricsrest}`)
-                    .setFooter({
-                        text: `Requested by ${interaction.user.tag}`,
-                        iconURL: interaction.user.displayAvatarURL({
-                            dynamic: true,
-                        }),
-                    })
-                    .setTimestamp();
-                await interaction.editReply({
-                    embeds: [lyricsEmbed],
-                });
-                await channel.send({
-                    embeds: [lyricsEmbedrest],
-                });
+                paginationEmbed(
+                    interaction,
+                    embeds,
+                    buttonList,
+                    120000,
+                    footer
+                );
             } else {
                 let lyricsEmbed = new EmbedBuilder()
                     .setColor("Aqua")
