@@ -11,6 +11,7 @@ const {
  * @param {EmbedBuilder[]} pages
  * @param {ButtonBuilder[]} buttonList
  * @param {number} timeout
+ * @param {object} footer
  * @returns
  */
 module.exports = {
@@ -18,7 +19,8 @@ module.exports = {
         interaction,
         pages,
         buttonList,
-        timeout = 120000
+        timeout = 120000,
+        footer = ""
     ) => {
         try {
             if (!pages) throw new Error("Pages are not given.");
@@ -38,13 +40,21 @@ module.exports = {
             if (interaction.deferred === false) {
                 await interaction.deferReply();
             }
-
+            let embed;
+            if (footer) {
+                embed = pages[page].setFooter({
+                    text: `${footer?.text}  •  Page ${page + 1} / ${
+                        pages.length
+                    }`,
+                    iconURL: footer.iconURL,
+                });
+            } else {
+                embed = pages[page].setFooter({
+                    text: `Page ${page + 1} / ${pages.length}`,
+                });
+            }
             const curPage = await interaction.editReply({
-                embeds: [
-                    pages[page].setFooter({
-                        text: `Page ${page + 1} / ${pages.length}`,
-                    }),
-                ],
+                embeds: [embed],
                 components: [row],
                 fetchReply: true,
             });
@@ -69,13 +79,20 @@ module.exports = {
                     default:
                         break;
                 }
-
+                if (footer) {
+                    embed = pages[page].setFooter({
+                        text: `${footer?.text}  •  Page ${page + 1} / ${
+                            pages.length
+                        }`,
+                        iconURL: footer.iconURL,
+                    });
+                } else {
+                    embed = pages[page].setFooter({
+                        text: `Page ${page + 1} / ${pages.length}`,
+                    });
+                }
                 await i.editReply({
-                    embeds: [
-                        pages[page].setFooter({
-                            text: `Page ${page + 1} / ${pages.length}`,
-                        }),
-                    ],
+                    embeds: [embed],
                     components: [row],
                 });
                 collector.resetTimer();
@@ -87,12 +104,20 @@ module.exports = {
                         buttonList[0].setDisabled(true),
                         buttonList[1].setDisabled(true)
                     );
+                    if (footer) {
+                        embed = pages[page].setFooter({
+                            text: `${footer?.text}  •  Page ${page + 1} / ${
+                                pages.length
+                            }`,
+                            iconURL: footer.iconURL,
+                        });
+                    } else {
+                        embed = pages[page].setFooter({
+                            text: `Page ${page + 1} / ${pages.length}`,
+                        });
+                    }
                     curPage.edit({
-                        embeds: [
-                            pages[page].setFooter({
-                                text: `Page ${page + 1} / ${pages.length}`,
-                            }),
-                        ],
+                        embeds: [embed],
                         components: [disabledRow],
                     });
                 }
