@@ -177,7 +177,7 @@ module.exports = {
                     interaction,
                     embeds,
                     buttonList,
-                    120000,
+                    1200000,
                     footer
                 );
             } else {
