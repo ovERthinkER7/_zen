@@ -24,8 +24,10 @@ module.exports = {
         const targetUser = interaction.options.get("user").value;
         const msg = interaction.options.get("message").value;
         const user = await interaction.guild.members.fetch(targetUser);
-
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.reply({
+            content: `Executing command ...`,
+            ephemeral: true,
+        });
         const channel = interaction.channel;
         const channelid = interaction.channelId;
         var flag = 1;
@@ -56,6 +58,7 @@ module.exports = {
                     try {
                         await webhooks.send({
                             content: msg,
+                            allowedMentions: { parse: ["users"] },
                         });
                         await interaction.editReply({
                             content: "command completed",
@@ -84,6 +87,7 @@ module.exports = {
             try {
                 await webhook.send({
                     content: msg,
+                    allowedMentions: { parse: ["users"] },
                 });
                 await interaction.editReply({
                     content: "command completed",
