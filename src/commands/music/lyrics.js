@@ -72,7 +72,13 @@ module.exports = {
                 });
             }
         }
-        await interaction.deferReply();
+        await interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setColor("Aqua")
+                    .setDescription(`**Searching 🔎...**`),
+            ],
+        });
         try {
             let currentTitle = ``;
             const phrasesToRemove = [

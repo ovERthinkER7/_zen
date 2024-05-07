@@ -37,8 +37,10 @@ module.exports = {
             const row = new ActionRowBuilder().addComponents(buttonList);
 
             //has the interaction already been deferred? If not, defer the reply.
-            if (interaction.deferred === false) {
-                await interaction.deferReply();
+            if (interaction.replied === false) {
+                if (interaction.deferred === false) {
+                    await interaction.deferReply();
+                }
             }
             let embed;
             if (footer) {

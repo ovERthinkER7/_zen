@@ -14,12 +14,11 @@ module.exports = {
         )
         .setDMPermission(false),
     run: async ({ interaction, client }) => {
-        await interaction.deferReply();
         const voiceChannel = interaction.member.voice.channel;
         const queue = await client.distube.getQueue(interaction);
         const query = interaction.options.get("query").value;
         if (!voiceChannel) {
-            return interaction.editReply({
+            return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
                         .setColor("Red")
@@ -34,7 +33,7 @@ module.exports = {
                 interaction.guild.members.me.voice.channelId !==
                 interaction.member.voice.channelId
             ) {
-                return interaction.editReply({
+                return interaction.reply({
                     embeds: [
                         new EmbedBuilder()
                             .setColor("Red")
@@ -48,6 +47,13 @@ module.exports = {
         }
 
         try {
+            await interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor("Aqua")
+                        .setDescription(`**Searching 🔎... ${query}**`),
+                ],
+            });
             const options = {
                 member: interaction.member,
                 textChannel: interaction.channel,
