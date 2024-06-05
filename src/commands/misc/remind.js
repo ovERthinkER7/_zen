@@ -38,6 +38,13 @@ module.exports = {
                         .setDescription("Enter ID to remove")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand((cmd) =>
+            cmd
+                .setName("delete")
+                .setDescription(
+                    "If used in server delete all reminders set in that server,if in dm delete all reminders."
+                )
         ),
     run: async ({ interaction, client, handler }) => {
         const subcommand = interaction.options.getSubcommand();
@@ -168,6 +175,77 @@ module.exports = {
                     console.log(err);
                 }
                 break;
+            case "delete":
+                let dembed = new EmbedBuilder();
+                if (!interaction.inGuild()) {
+                    try {
+                        const deleted = await remindschema.deleteMany({
+                            User: interaction.user.id,
+                        });
+                        if (deleted.deletedCount >= 1) {
+                            dembed
+                                .setDescription(
+                                    "✅ | Successfully deleted all reminders!"
+                                )
+                                .setColor("Aqua");
+                            await interaction
+                                .reply({
+                                    embeds: [dembed],
+                                    ephemeral: true,
+                                })
+                                .catch((err) => console.log(err));
+                        } else {
+                            dembed
+                                .setDescription(
+                                    "⚠️ | You don't have any reminder set. To set reminder, use the </remind set:1225466582910767174> command."
+                                )
+                                .setColor("Red");
+                            await interaction
+                                .reply({
+                                    embeds: [dembed],
+                                    ephemeral: true,
+                                })
+                                .catch((err) => console.log(err));
+                        }
+                    } catch (err) {
+                        console.log(err);
+                    }
+                } else {
+                    try {
+                        const deleted = await remindschema.deleteMany({
+                            User: interaction.user.id,
+                            Guild: interaction.guild.id,
+                        });
+                        console.log(deleted);
+                        if (deleted.deletedCount >= 1) {
+                            dembed
+                                .setDescription(
+                                    `✅ | Successfully deleted all reminders in **${interaction.guild.name}**!`
+                                )
+                                .setColor("Aqua");
+                            await interaction
+                                .reply({
+                                    embeds: [dembed],
+                                    ephemeral: true,
+                                })
+                                .catch((err) => console.log(err));
+                        } else {
+                            dembed
+                                .setDescription(
+                                    "⚠️ | You don't have any reminder set. To set reminder, use the </remind set:1225466582910767174> command."
+                                )
+                                .setColor("Red");
+                            await interaction
+                                .reply({
+                                    embeds: [dembed],
+                                    ephemeral: true,
+                                })
+                                .catch((err) => console.log(err));
+                        }
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
         }
     },
 };
