@@ -22,8 +22,7 @@ function evaluateExpression(expression) {
     }
     expression = expandShortForms(expression);
     try {
-        const parser = math.parser();
-        const result = parser.evaluate(expression);
+        const result = math.evaluate(expression);
         return result;
     } catch (err) {
         return null;
@@ -34,26 +33,19 @@ module.exports = async (message, client, handler) => {
     if (message.author.bot || !message.inGuild()) return;
     var cal = message.content;
     const result = evaluateExpression(cal);
-    if (result === null) {
+    if (result === null || isNaN(result)) {
         return;
     } else {
         const channel = message.channel;
         try {
-            if (isNaN(result)) {
-                const embed = new EmbedBuilder()
-                    .setColor("Aqua")
-                    .setDescription(`**Calculated** ${result}`);
-                await channel.send({ embeds: [embed] });
-            } else {
-                const formattedresult = parseFloat(result.toFixed(2));
-                const embed = new EmbedBuilder()
-                    .setColor("Aqua")
-                    .setTitle(`Calculated ${Math.floor(result)}`)
-                    .setDescription(
-                        `**Solved:** \`${formattedresult.toLocaleString()}\`\n**Raw:** \`${result}\``
-                    );
-                await channel.send({ embeds: [embed] });
-            }
+            const formattedresult = parseFloat(result.toFixed(2));
+            const embed = new EmbedBuilder()
+                .setColor("Aqua")
+                .setTitle(`Calculated ${Math.floor(result)}`)
+                .setDescription(
+                    `**Solved:** \`${formattedresult.toLocaleString()}\`\n**Raw:** \`${result}\``
+                );
+            await channel.send({ embeds: [embed] });
         } catch (err) {
             console.log(err);
         }
