@@ -5,6 +5,7 @@ const {
     ActivityType,
     EmbedBuilder,
 } = require("discord.js");
+const fs = require("node:fs");
 const mongoose = require("mongoose");
 const { CommandKit } = require("commandkit");
 const remindschema = require("./models//reminder");
@@ -20,7 +21,11 @@ const client = new Client({
         IntentsBitField.Flags.GuildVoiceStates,
     ],
 });
-module.exports = client;
+
+client.CurrentSongs = [];
+
+module.exports.client = client;
+require("./utils/distube.js");
 
 new CommandKit({
     client,
@@ -83,5 +88,14 @@ setInterval(async () => {
         });
     }
 }, 1000 * 5);
-require("./utils/distube.js");
+
+console.log(`Loading DisTube Events`);
+const distubeEvents = fs
+    .readdirSync(`src/events/distube`)
+    .filter((file) => file.endsWith(".js"));
+for (const file of distubeEvents) {
+    const event = require(`./events/distube/${file}`);
+    client.distube.on(file.split(".")[0], event.bind(null, client));
+}
+
 keepAlive();

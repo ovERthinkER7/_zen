@@ -1,175 +1,44 @@
-const client = require("../index.js");
-const { EmbedBuilder } = require("discord.js");
+const { client } = require("../index.js");
 const { DisTube } = require("distube");
-const { SpotifyPlugin } = require("@distube/spotify");
+const { YouTubePlugin } = require("@distube/youtube");
 const { SoundCloudPlugin } = require("@distube/soundcloud");
+const { SpotifyPlugin } = require("@distube/spotify");
+const { DeezerPlugin } = require("@distube/deezer");
 const { YtDlpPlugin } = require("@distube/yt-dlp");
-const fs = require("fs");
+const { AppleMusicPlugin } = require("distube-apple-music");
 
-let spotifyOptions = {
-    parallel: true,
-    emitEventsAfterFetching: true,
+client.distubeSettings = {
+    leaveOnEmpty: true, // Whether or not leaving voice channel if the voice channel is empty after DisTubeOptions.emptyCooldown seconds.
+    leaveOnFinish: false, // Whether or not leaving voice channel when the queue ends.
+    leaveOnStop: false, // Whether or not leaving voice channel after using DisTube#stop function.
+    searchSongs: 10, // DONT SET IT MORE THAN 25!!! | Limit of search results emits in DisTube#event:searchResult event when DisTube#play method executed. If searchSongs <= 1, play the first result.
+    emptyCooldown: 60, // Built-in leave on empty cooldown in seconds. (When leaveOnEmpty is true)
+    directLink: true, // Whether or not play direct link of the song.
+    deleteAfterFinish: false, // Deletes Now Playing Message after song finished.
 };
-let youtubeCookie;
-if (process.env.YOUTUBE_COOKIE) {
-    youtubeCookie = JSON.parse(fs.readFileSync("src/utils/cookie.json"));
-} else {
-    youtubeCookie = "none";
+
+const distubePlugins = [
+    new YouTubePlugin(), // YouTube plugin.
+    new SoundCloudPlugin(), // SoundCloud plugin.
+    new SpotifyPlugin(), // Spotify plugin.
+    new DeezerPlugin(), // Deezer plugin.
+    new AppleMusicPlugin(), // Apple Music plugin.
+    new YtDlpPlugin(), // yt-dlp plugin for supporting 700+ sites.
+];
+
+if (client.distubeSettings.directLink) {
+    const { DirectLinkPlugin } = require("@distube/direct-link");
+    distubePlugins.push(new DirectLinkPlugin());
 }
+
+// DisTube client constructor
 client.distube = new DisTube(client, {
-    leaveOnFinish: false,
-    searchCooldown: 10,
-    leaveOnEmpty: true,
-    emptyCooldown: 180,
-    leaveOnStop: false,
-    nsfw: true,
-    youtubeCookie: youtubeCookie,
-    ytdlOptions: {
-        highWaterMark: 1024 * 1024 * 64,
-        quality: "highestaudio",
-        format: "audioonly",
-        liveBuffer: 60000,
-        dlChunkSize: 1024 * 1024 * 4,
-    },
-    emitNewSongOnly: true,
-    emitAddSongWhenCreatingQueue: true,
-    emitAddListWhenCreatingQueue: true,
-    plugins: [
-        new SoundCloudPlugin(),
-        new YtDlpPlugin({ update: true }),
-        new SpotifyPlugin(spotifyOptions),
-    ],
+    // Change these on your risk! more info https://distube.js.org/#/docs/DisTube/stable/typedef/DisTubeOptions
+    emitNewSongOnly: false, // Whether or not emitting DisTube#event:playSong event when looping a song or next song is the same as the previous one.
+    savePreviousSongs: true, // Whether or not saving the previous songs of the queue and enable DisTube#previous method.
+    nsfw: true, // Whether or not playing age-restricted content and disabling safe search in non-NSFW channel.
+    emitAddListWhenCreatingQueue: true, // Whether or not emitting addList event when creating a new Queue.
+    emitAddSongWhenCreatingQueue: true, // Whether or not emitting addSong event when creating a new Queue.
+    joinNewVoiceChannel: false, // Whether or not joining the new voice channel when using DisTube#play method.
+    plugins: distubePlugins,
 });
-const isspotify = true;
-if (isspotify) {
-    console.log("[INFO] You're (Enabled) Spotify More Tracks Support!");
-    spotifyOptions.api = {
-        clientId: process.env.SPOTIFY_ID,
-        clientSecret: process.env.SPOTIFY_SECRET,
-    };
-}
-
-const status = (queue) =>
-    `Volume: \`${queue.volume}%\` | Loop: \`${
-        queue.repeatMode
-            ? queue.repeatMode === 2
-                ? "All Queue"
-                : "This Song"
-            : "Off"
-    }\` | Autoplay: \`${queue.autoplay ? "On" : "Off"}\` | Filter: \`${
-        queue.filters.names.join(", ") || "Off"
-    }\``;
-// DisTube event listeners
-client.distube
-    .on("playSong", (queue, song) => {
-        const embed = new EmbedBuilder()
-            .setColor("Aqua")
-            .setTitle("🎵 Playing")
-            .setThumbnail(song.thumbnail)
-            .setDescription(`[${song.name}](${song.url})`)
-            .addFields(
-                {
-                    name: `**Views:**`,
-                    value: song.views.toLocaleString(),
-                    inline: true,
-                },
-                {
-                    name: `**Duration:**`,
-                    value: song.formattedDuration.toString(),
-                    inline: true,
-                },
-                {
-                    name: `**Status**`,
-                    value: status(queue).toString(),
-                    inline: false,
-                }
-            )
-            .setFooter({
-                text: `Requested by ${song.user.username}`,
-                iconURL: song.user.avatarURL(),
-            })
-            .setTimestamp();
-        queue.textChannel.send({ embeds: [embed] });
-    })
-    .on("addList", (queue, playlist) => {
-        module.exports = {
-            thumbnail: playlist.thumbnail,
-            name: playlist.name,
-            url: playlist.url,
-            queues: queue,
-            formattedDuration: playlist.formattedDuration,
-            user: playlist.user,
-            isplaylist: true,
-        };
-    })
-    .on("addSong", (queue, song) => {
-        // var issongs = queue.songs.length == 1 ? "song" : "songs";
-        // const embed = new EmbedBuilder()
-        //     .setTitle("🎵 Added to queue")
-        //     .setDescription(`[${song.name}](${song.url})`)
-        //     .addFields(
-        //         { name: `Requested by`, value: `${song.user}`, inline: true },
-        //         {
-        //             name: `Duration`,
-        //             value: `\`${song.formattedDuration}\``,
-        //             inline: true,
-        //         },
-        //         {
-        //             name: `Queue`,
-        //             value: `${queue.songs.length} ${issongs} - \`${queue.formattedDuration}\``,
-        //             inline: true,
-        //         }
-        //     )
-        //     .setThumbnail(song.thumbnail)
-        //     .setColor("Aqua")
-        //     .setTimestamp();
-        // queue.textChannel.send({ embeds: [embed] });
-        module.exports = {
-            thumbnail: song.thumbnail,
-            name: song.name,
-            url: song.url,
-            queues: queue,
-            formattedDuration: song.formattedDuration,
-            user: song.user,
-            isplaylist: false,
-        };
-    })
-    .on("error", (textChannel, e) => {
-        console.error(e);
-        textChannel.send(`An error encountered: ${e}`);
-    })
-    // .on("finish", (queue) =>
-    //     queue.textChannel.send(
-    //         "***No more song in queue. Leaving the channel***"
-    //     )
-    // )
-    // .on("finishSong", (queue) => {
-    //     const embed = new EmbedBuilder().setDescription(
-    //         `:white_check_mark: | Finished playing \`${queue.songs[0].name}\``
-    //     );
-    //     queue.textChannel.send({ embeds: [embed] });
-    // })
-    // .on("disconnect", (queue) => {
-    //     const embed = new EmbedBuilder().setDescription(
-    //         ":x: | Disconnected from voice channel"
-    //     );
-    //     queue.textChannel.send({ embeds: [embed] });
-    // })
-    .on("empty", (queue) => {
-        const embed = new EmbedBuilder()
-            .setDescription(":x: | Channel is empty. Leaving the channel!")
-            .setColor("Aqua");
-        queue.textChannel.send({ embeds: [embed] });
-    })
-    .on("noRelated", (queue) => {
-        const embed = new EmbedBuilder()
-            .setTitle("Oh no!")
-            .setDescription("❌ I can't find any related song to play")
-            .setColor("Red");
-
-        queue.textChannel.send({ embeds: [embed] });
-    })
-    .on("initQueue", (queue) => {
-        queue.autoplay = false;
-        queue.volume = 100;
-    });

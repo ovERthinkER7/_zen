@@ -46,48 +46,27 @@ module.exports = {
             }
         }
 
-        try {
-            await interaction.reply({
-                embeds: [
-                    new EmbedBuilder()
-                        .setColor("Aqua")
-                        .setDescription(`**Searching 🔎... ${query}**`),
-                ],
+        await interaction.deferReply({ ephemeral: true });
+
+        const searchEmbed = new EmbedBuilder()
+            .setColor("Aqua")
+            .setDescription("Searching...")
+            .setFooter({
+                text: `Requested by ${
+                    interaction.user.globalName || interaction.user.username
+                }`,
+                iconURL: interaction.user.displayAvatarURL({ size: 1024 }),
             });
-            const options = {
+
+        await interaction.editReply({ embeds: [searchEmbed] });
+
+        try {
+            await client.distube.play(voiceChannel, query, {
                 member: interaction.member,
                 textChannel: interaction.channel,
-                interaction,
-            };
-            await client.distube.play(voiceChannel, query, options);
-            const song = require("../../utils/distube.js");
-            var issongs = song.queues.songs.length == 1 ? "song" : "songs";
-            var isplaylist = song.isplaylist ? "**Playlist:**" : "**Song:**";
-            const embed = new EmbedBuilder()
-                .setTitle("🎵 Added to queue")
-                .setDescription(`${isplaylist} [${song.name}](${song.url})`)
-                .addFields(
-                    {
-                        name: `Requested by`,
-                        value: `${song.user}`,
-                        inline: true,
-                    },
-                    {
-                        name: `Duration`,
-                        value: `\`${song.formattedDuration}\``,
-                        inline: true,
-                    },
-                    {
-                        name: `Queue`,
-                        value: `${song.queues.songs.length} ${issongs} - \`${song.queues.formattedDuration}\``,
-                        inline: true,
-                    }
-                )
-                .setThumbnail(song.thumbnail)
-                .setColor("Aqua")
-                .setTimestamp();
+            });
 
-            await interaction.editReply({ embeds: [embed] });
+            await interaction.deleteReply();
         } catch (error) {
             console.log(error);
             // await interaction.editReply("⚠️ Not found");
