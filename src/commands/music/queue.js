@@ -93,7 +93,7 @@ module.exports = {
                     let emb = new EmbedBuilder()
                         .setTitle("Songs list")
                         .setColor("Aqua")
-                        .setThumbnail(queue.songs[0].thumbnail)
+                        .setThumbnail(queue.songs[0]?.thumbnail)
                         .setDescription(
                             `**Now playing**\n[**${queue.songs[0].name}**](${queue.songs[0].url})\n\n${songs}`
                         );
@@ -113,7 +113,7 @@ module.exports = {
                 let emb = new EmbedBuilder()
                     .setTitle("Songs list")
                     .setColor("Aqua")
-                    .setThumbnail(queue.songs[0].thumbnail)
+                    .setThumbnail(queue.songs[0]?.thumbnail)
                     .setDescription(
                         `**Now playing**\n[**${queue.songs[0].name}**](${queue.songs[0].url})\n\n${songs}`
                     )
