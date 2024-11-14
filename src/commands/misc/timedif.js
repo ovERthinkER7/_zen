@@ -32,8 +32,13 @@ module.exports = {
             });
         }
         const { options } = interaction;
-        const message_id_1 = options.get("message_id_1").value;
+        const message_id_1 =
+            (options.get("message_id_1").value.match(/-(\d+)/) || [])[1] ||
+            options.get("message_id_1").value;
         var message_id_2 = options.get("message_id_2")?.value || "1";
+        if (message_id_2.includes("-")) {
+            message_id_2 = message_id_2.split("-")[1];
+        }
         var difmsg = "two given IDs";
         if (isNaN(message_id_1) && isNaN(message_id_2)) {
             await interaction.reply(`invalid id`);
