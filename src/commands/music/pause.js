@@ -54,13 +54,13 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        queue.pause();
         try {
+            await client.distube.pause(interaction);
             const msg = await interaction.reply({
                 embeds: [
                     new EmbedBuilder()
                         .setColor("Aqua")
-                        .setDescription(`⏸️ | **Music paused!**`),
+                        .setDescription(`⏸️ **Music paused!**`),
                 ],
             });
         } catch (err) {

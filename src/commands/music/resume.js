@@ -45,7 +45,7 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        if (queue.playing) {
+        if (!queue.paused) {
             const embed = new EmbedBuilder()
                 .setColor("Aqua")
                 .setDescription(`🚫 | The music is already playing!`);
@@ -54,13 +54,13 @@ module.exports = {
                 ephemeral: true,
             });
         }
-        queue.resume();
         try {
+            await client.distube.resume(interaction);
             await interaction.reply({
                 embeds: [
                     new EmbedBuilder()
                         .setColor("Aqua")
-                        .setDescription(`▶️ | **Music resumed!**`),
+                        .setDescription(`▶️ **Music resumed!**`),
                 ],
             });
         } catch (err) {
