@@ -59,7 +59,15 @@ new CommandKit({
         console.log(`Error: ${error}`);
     }
 })();
+// prevent crash on unhandled promise rejection
+process.on("unhandledRejection", (reason) => {
+    console.error("Unhandled promise rejection:", reason);
+});
 
+// prevent crash on uncaught exception
+process.on("uncaughtException", (err) => {
+    console.error("Uncaught exception:", err);
+});
 setInterval(async () => {
     const reminders = await remindschema.find();
     if (!reminders) return;
