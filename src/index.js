@@ -97,6 +97,7 @@ setInterval(async () => {
     }
 }, 1000 * 5);
 
+require("./utils/distube.js");
 console.log(`Loading DisTube Events`);
 const distubeEvents = fs
     .readdirSync(`src/events/distube`)
